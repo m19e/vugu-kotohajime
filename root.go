@@ -6,9 +6,22 @@ import "fmt"
 import "reflect"
 import "github.com/vugu/vugu"
 
-type RootData struct{ Show bool }
+type RootData struct {
+	Show  bool
+	Count int
+}
 
-func (data *RootData) Toggle() { data.Show = !data.Show }
+func (data *RootData) Toggle() {
+	data.Show = !data.Show
+}
+
+func (data *RootData) Increment() {
+	data.Count++
+}
+
+func (data *RootData) Decrement() {
+	data.Count--
+}
 
 var _ vugu.ComponentType = (*Root)(nil)
 
@@ -20,7 +33,7 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 	event := vugu.DOMEventStub
 	_ = event
 	css = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "style", DataAtom: vugu.VGAtom(458501), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-	css.AppendChild(&vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n.my-first-vugu-comp { background: #eee; }\n", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)})
+	css.AppendChild(&vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    .my-first-vugu-comp {\n        background: #eee;\n    }\n", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)})
 	var n *vugu.VGNode
 	n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "div", DataAtom: vugu.VGAtom(92931), Namespace: "", Attr: []vugu.VGAttribute{vugu.VGAttribute{Namespace: "", Key: "class", Val: "my-first-vugu-comp"}}}
 	vdom = n
@@ -61,6 +74,69 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "I am here!", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 				parent.AppendChild(n)
 			}
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "br", DataAtom: vugu.VGAtom(514), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(4), Data: " counter ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		// @click = { data.Increment() }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.Increment
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("Increment"),
+				Args:                  []interface{}{},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.Increment()
+		}
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "+", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "div", DataAtom: vugu.VGAtom(92931), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n.InnerHTML = fmt.Sprint(data.Count)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		// @click = { data.Decrement() }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.Decrement
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("Decrement"),
+				Args:                  []interface{}{},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.Decrement()
+		}
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "-", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
 		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
