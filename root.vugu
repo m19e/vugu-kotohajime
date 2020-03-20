@@ -6,6 +6,11 @@
     <button @click="data.Increment()">+</button>
     <div vg-html="data.Count"></div>
     <button @click="data.Decrement()">-</button>
+    <table id="calculator"></table>
+    <strong vg-html="data.Result">0</strong>
+    <div vg-for="i := 0; i < 10; i++">
+        <button @click="data.Join(i)" vg-html="i"></button>
+    </div>
 </div>
 
 <style>
@@ -15,9 +20,13 @@
 </style>
 
 <script type="application/x-go">
+
+    import("strconv")
+
     type RootData struct {
         Show bool
         Count int
+        Result string
     }
 
     func (data *RootData) Toggle() {
@@ -30,5 +39,9 @@
 
     func (data *RootData) Decrement() {
         data.Count--
+    }
+
+    func (data *RootData) Join(i int) {
+        data.Result += strconv.Itoa(i)
     }
 </script>
