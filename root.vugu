@@ -9,7 +9,7 @@
     <table id="calculator"></table>
     <strong vg-html="data.Result">0</strong>
     <div vg-for="i := 0; i < 10; i++">
-        <button @click="data.Join(i)" vg-html="i"></button>
+        <button @click="data.InputNum(i)" vg-html="i"></button>
     </div>
 </div>
 
@@ -41,7 +41,7 @@
         data.Count--
     }
 
-    func (data *RootData) Join(i int) {
-        data.Result += strconv.Itoa(i)
+    func (data *RootData) InputNum(i int) {
+        if i != 0 || data.Result != "" { data.Result += strconv.Itoa(i) }
     }
 </script>

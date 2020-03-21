@@ -28,8 +28,10 @@ func (data *RootData) Decrement() {
 	data.Count--
 }
 
-func (data *RootData) Join(i int) {
-	data.Result += strconv.Itoa(i)
+func (data *RootData) InputNum(i int) {
+	if i != 0 || data.Result != "" {
+		data.Result += strconv.Itoa(i)
+	}
 }
 
 var _ vugu.ComponentType = (*Root)(nil)
@@ -173,21 +175,21 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 				n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 				parent.AppendChild(n)
 				n.InnerHTML = fmt.Sprint(i)
-				// @click = { data.Join(i) }
+				// @click = { data.InputNum(i) }
 				{
 					var i_ interface{} = data
 					idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
-					var i2_ interface{} = data.Join
+					var i2_ interface{} = data.InputNum
 					i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
 					n.SetDOMEventHandler("click", vugu.DOMEventHandler{
 						ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
-						Method:                reflect.ValueOf(data).MethodByName("Join"),
+						Method:                reflect.ValueOf(data).MethodByName("InputNum"),
 						Args:                  []interface{}{i},
 					})
 				}
 				if false {
 					// force compiler to check arguments for type safety
-					data.Join(i)
+					data.InputNum(i)
 				}
 				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 				parent.AppendChild(n)
