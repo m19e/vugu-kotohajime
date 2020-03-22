@@ -1,3 +1,4 @@
+<!-- <div class="my-first-vugu-comp" vg-if="data.Mount()"> -->
 <div class="my-first-vugu-comp">
     <button @click="data.Toggle()">Test</button>
     <div vg-if="data.Show">I am here!</div>
@@ -6,8 +7,10 @@
     <button @click="data.Increment()">+</button>
     <div vg-html="data.Count"></div>
     <button @click="data.Decrement()">-</button>
+    <!-- calculator -->
     <table id="calculator"></table>
-    <strong vg-html="data.Result">0</strong>
+    <button @click="data.ClearNum()">C</button>
+    <strong><span vg-html="data.Result">0</span></strong>
     <div vg-for="i := 0; i < 10; i++">
         <button @click="data.InputNum(i)" vg-html="i"></button>
     </div>
@@ -29,6 +32,24 @@
         Result string
     }
 
+    type Operator int
+
+    const (
+        Plus Operator = iota
+        Sub
+        Mul
+        Div
+        None
+    )
+
+    var (
+        currentNum = ""
+        accumulator = ""
+        operator = None
+    )
+
+
+
     func (data *RootData) Toggle() {
         data.Show = !data.Show
     }
@@ -41,7 +62,16 @@
         data.Count--
     }
 
+    func (data *RootData) Mounted() bool {
+        return true
+    }
+
     func (data *RootData) InputNum(i int) {
-        if i != 0 || data.Result != "" { data.Result += strconv.Itoa(i) }
+        if data.Result == "0" { data.Result = "" }
+        data.Result += strconv.Itoa(i)
+    }
+
+    func (data *RootData) ClearNum() {
+        data.Result = "0"
     }
 </script>
