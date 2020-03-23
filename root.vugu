@@ -3,14 +3,16 @@
     <button @click="data.Toggle()">Test</button>
     <div vg-if="data.Show">I am here!</div>
     <br />
-    <!-- counter -->
-    <button @click="data.Increment()">+</button>
-    <div vg-html="data.Count"></div>
-    <button @click="data.Decrement()">-</button>
     <!-- calculator -->
     <table id="calculator"></table>
-    <button @click="data.ClearNum()">C</button>
     <strong><span vg-html="data.Result">0</span></strong>
+    <br />
+    <button @click="data.ClearNum()">C</button>
+    <button @click="data.DoOperate(string('+'))">+</button>
+    <button @click="data.DoOperate(string('-'))">-</button>
+    <button @click="data.DoOperate(string('*'))">*</button>
+    <button @click="data.DoOperate(string('/'))">/</button>
+    <button @click="data.DoEqual()">=</button>
     <div vg-for="i := 0; i < 10; i++">
         <button @click="data.InputNum(i)" vg-html="i"></button>
     </div>
@@ -30,6 +32,7 @@
         Show bool
         Count int
         Result string
+        Ops []string
     }
 
     type Operator int
@@ -43,12 +46,9 @@
     )
 
     var (
-        currentNum = ""
-        accumulator = ""
-        operator = None
+        accumulator =   ""
+        operator =      None
     )
-
-
 
     func (data *RootData) Toggle() {
         data.Show = !data.Show
@@ -62,10 +62,6 @@
         data.Count--
     }
 
-    func (data *RootData) Mounted() bool {
-        return true
-    }
-
     func (data *RootData) InputNum(i int) {
         if data.Result == "0" { data.Result = "" }
         data.Result += strconv.Itoa(i)
@@ -73,5 +69,44 @@
 
     func (data *RootData) ClearNum() {
         data.Result = "0"
+    }
+
+    func (data *RootData) DoOperate(op string) {
+        accumulator += data.Result
+        data.Result = "0"
+
+        switch op {
+        case "+":
+            operator = Plus
+        case "-":
+            operator = Sub
+        case "*":
+            operator = Mul
+        case "/":
+            operator = Div
+        default:
+            operator = None
+        }
+    }
+
+    func (data *RootData) DoEqual() {
+        former, _ := strconv.Atoi(accumulator)
+        latter, _ := strconv.Atoi(data.Result)
+
+        accumulator = ""
+
+        var result int
+        switch operator {
+        case Plus:
+            result = former + latter
+        case Sub:
+            result = former - latter
+        case Mul:
+            result = former * latter
+        case Div:
+            result = former / latter
+        }
+
+        data.Result = strconv.Itoa(result)
     }
 </script>

@@ -14,6 +14,7 @@ type RootData struct {
 	Show   bool
 	Count  int
 	Result string
+	Ops    []string
 }
 
 type Operator int
@@ -27,7 +28,6 @@ const (
 )
 
 var (
-	currentNum  = ""
 	accumulator = ""
 	operator    = None
 )
@@ -44,10 +44,6 @@ func (data *RootData) Decrement() {
 	data.Count--
 }
 
-func (data *RootData) Mounted() bool {
-	return true
-}
-
 func (data *RootData) InputNum(i int) {
 	if data.Result == "0" {
 		data.Result = ""
@@ -57,6 +53,45 @@ func (data *RootData) InputNum(i int) {
 
 func (data *RootData) ClearNum() {
 	data.Result = "0"
+}
+
+func (data *RootData) DoOperate(op string) {
+	accumulator += data.Result
+	data.Result = "0"
+
+	switch op {
+	case "+":
+		operator = Plus
+	case "-":
+		operator = Sub
+	case "*":
+		operator = Mul
+	case "/":
+		operator = Div
+	default:
+		operator = None
+	}
+}
+
+func (data *RootData) DoEqual() {
+	former, _ := strconv.Atoi(accumulator)
+	latter, _ := strconv.Atoi(data.Result)
+
+	accumulator = ""
+
+	var result int
+	switch operator {
+	case Plus:
+		result = former + latter
+	case Sub:
+		result = former - latter
+	case Mul:
+		result = former * latter
+	case Div:
+		result = former / latter
+	}
+
+	data.Result = strconv.Itoa(result)
 }
 
 var _ vugu.ComponentType = (*Root)(nil)
@@ -117,70 +152,30 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(4), Data: " counter ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		// @click = { data.Increment() }
-		{
-			var i_ interface{} = data
-			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
-			var i2_ interface{} = data.Increment
-			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
-			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
-				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
-				Method:                reflect.ValueOf(data).MethodByName("Increment"),
-				Args:                  []interface{}{},
-			})
-		}
-		if false {
-			// force compiler to check arguments for type safety
-			data.Increment()
-		}
-		{
-			parent := n
-			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "+", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-			parent.AppendChild(n)
-		}
-		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "div", DataAtom: vugu.VGAtom(92931), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		n.InnerHTML = fmt.Sprint(data.Count)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
-		// @click = { data.Decrement() }
-		{
-			var i_ interface{} = data
-			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
-			var i2_ interface{} = data.Decrement
-			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
-			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
-				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
-				Method:                reflect.ValueOf(data).MethodByName("Decrement"),
-				Args:                  []interface{}{},
-			})
-		}
-		if false {
-			// force compiler to check arguments for type safety
-			data.Decrement()
-		}
-		{
-			parent := n
-			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "-", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-			parent.AppendChild(n)
-		}
-		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(4), Data: " calculator ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "table", DataAtom: vugu.VGAtom(365829), Namespace: "", Attr: []vugu.VGAttribute{vugu.VGAttribute{Namespace: "", Key: "id", Val: "calculator"}}}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "strong", DataAtom: vugu.VGAtom(449798), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "span", DataAtom: vugu.VGAtom(40708), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
+			n.InnerHTML = fmt.Sprint(data.Result)
+			{
+				parent := n
+				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "0", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+				parent.AppendChild(n)
+			}
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "br", DataAtom: vugu.VGAtom(514), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
@@ -209,18 +204,128 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "strong", DataAtom: vugu.VGAtom(449798), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
+		// @click = { data.DoOperate(string('+')) }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.DoOperate
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("DoOperate"),
+				Args:                  []interface{}{string('+')},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.DoOperate(string('+'))
+		}
 		{
 			parent := n
-			n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "span", DataAtom: vugu.VGAtom(40708), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "+", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 			parent.AppendChild(n)
-			n.InnerHTML = fmt.Sprint(data.Result)
-			{
-				parent := n
-				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "0", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-				parent.AppendChild(n)
-			}
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		// @click = { data.DoOperate(string('-')) }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.DoOperate
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("DoOperate"),
+				Args:                  []interface{}{string('-')},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.DoOperate(string('-'))
+		}
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "-", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		// @click = { data.DoOperate(string('*')) }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.DoOperate
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("DoOperate"),
+				Args:                  []interface{}{string('*')},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.DoOperate(string('*'))
+		}
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "*", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		// @click = { data.DoOperate(string('/')) }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.DoOperate
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("DoOperate"),
+				Args:                  []interface{}{string('/')},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.DoOperate(string('/'))
+		}
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "/", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
+		}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		// @click = { data.DoEqual() }
+		{
+			var i_ interface{} = data
+			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
+			var i2_ interface{} = data.DoEqual
+			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
+			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
+				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
+				Method:                reflect.ValueOf(data).MethodByName("DoEqual"),
+				Args:                  []interface{}{},
+			})
+		}
+		if false {
+			// force compiler to check arguments for type safety
+			data.DoEqual()
+		}
+		{
+			parent := n
+			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "=", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+			parent.AppendChild(n)
 		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
