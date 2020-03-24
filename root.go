@@ -14,7 +14,8 @@ type RootData struct {
 	Show   bool
 	Count  int
 	Result string
-	Ops    []string
+	Op     string
+	Ac     string
 }
 
 type Operator int
@@ -57,6 +58,7 @@ func (data *RootData) ClearNum() {
 
 func (data *RootData) DoOperate(op string) {
 	accumulator += data.Result
+	data.Ac = data.Result
 	data.Result = "0"
 
 	switch op {
@@ -71,6 +73,9 @@ func (data *RootData) DoOperate(op string) {
 	default:
 		operator = None
 	}
+
+	data.Op = op
+	data.Show = true
 }
 
 func (data *RootData) DoEqual() {
@@ -92,6 +97,7 @@ func (data *RootData) DoEqual() {
 	}
 
 	data.Result = strconv.Itoa(result)
+	data.Show = false
 }
 
 var _ vugu.ComponentType = (*Root)(nil)
@@ -112,39 +118,13 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 		parent := n
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
-		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "button", DataAtom: vugu.VGAtom(102662), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		n = &vugu.VGNode{Type: vugu.VGNodeType(4), Data: " <button @click=\"data.Toggle()\">Test</button> ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
-		// @click = { data.Toggle() }
-		{
-			var i_ interface{} = data
-			idat_ := reflect.ValueOf(&i_).Elem().InterfaceData()
-			var i2_ interface{} = data.Toggle
-			i2dat_ := reflect.ValueOf(&i2_).Elem().InterfaceData()
-			n.SetDOMEventHandler("click", vugu.DOMEventHandler{
-				ReceiverAndMethodHash: uint64(idat_[0]) ^ uint64(idat_[1]) ^ uint64(i2dat_[0]) ^ uint64(i2dat_[1]),
-				Method:                reflect.ValueOf(data).MethodByName("Toggle"),
-				Args:                  []interface{}{},
-			})
-		}
-		if false {
-			// force compiler to check arguments for type safety
-			data.Toggle()
-		}
-		{
-			parent := n
-			n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "Test", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-			parent.AppendChild(n)
-		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
 		if data.Show {
 			n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "div", DataAtom: vugu.VGAtom(92931), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 			parent.AppendChild(n)
-			{
-				parent := n
-				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "I am here!", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-				parent.AppendChild(n)
-			}
 		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
@@ -154,6 +134,27 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(4), Data: " calculator ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
+		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+		parent.AppendChild(n)
+		if data.Show {
+			n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "div", DataAtom: vugu.VGAtom(92931), Namespace: "", Attr: []vugu.VGAttribute{vugu.VGAttribute{Namespace: "", Key: "style", Val: "display: inline-block;"}}}
+			parent.AppendChild(n)
+			{
+				parent := n
+				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n        ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+				parent.AppendChild(n)
+				n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "p", DataAtom: vugu.VGAtom(3073), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+				parent.AppendChild(n)
+				n.InnerHTML = fmt.Sprint(data.Ac)
+				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n        ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+				parent.AppendChild(n)
+				n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "p", DataAtom: vugu.VGAtom(3073), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+				parent.AppendChild(n)
+				n.InnerHTML = fmt.Sprint(data.Op)
+				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
+				parent.AppendChild(n)
+			}
+		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)
 		n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "table", DataAtom: vugu.VGAtom(365829), Namespace: "", Attr: []vugu.VGAttribute{vugu.VGAttribute{Namespace: "", Key: "id", Val: "calculator"}}}
@@ -167,11 +168,6 @@ func (comp *Root) BuildVDOM(dataI interface{}) (vdom *vugu.VGNode, css *vugu.VGN
 			n = &vugu.VGNode{Type: vugu.VGNodeType(3), Data: "span", DataAtom: vugu.VGAtom(40708), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 			parent.AppendChild(n)
 			n.InnerHTML = fmt.Sprint(data.Result)
-			{
-				parent := n
-				n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "0", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
-				parent.AppendChild(n)
-			}
 		}
 		n = &vugu.VGNode{Type: vugu.VGNodeType(1), Data: "\n    ", DataAtom: vugu.VGAtom(0), Namespace: "", Attr: []vugu.VGAttribute(nil)}
 		parent.AppendChild(n)

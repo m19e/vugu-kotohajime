@@ -1,11 +1,14 @@
-<!-- <div class="my-first-vugu-comp" vg-if="data.Mount()"> -->
 <div class="my-first-vugu-comp">
-    <button @click="data.Toggle()">Test</button>
-    <div vg-if="data.Show">I am here!</div>
+    <!-- <button @click="data.Toggle()">Test</button> -->
+    <div vg-if="data.Show"></div>
     <br />
     <!-- calculator -->
+    <div vg-if="data.Show" style="display: inline-block;">
+        <p vg-html="data.Ac"></p>
+        <p vg-html="data.Op"></p>
+    </div>
     <table id="calculator"></table>
-    <strong><span vg-html="data.Result">0</span></strong>
+    <strong><span vg-html="data.Result"></span></strong>
     <br />
     <button @click="data.ClearNum()">C</button>
     <button @click="data.DoOperate(string('+'))">+</button>
@@ -32,7 +35,8 @@
         Show bool
         Count int
         Result string
-        Ops []string
+        Op string
+        Ac string
     }
 
     type Operator int
@@ -73,6 +77,7 @@
 
     func (data *RootData) DoOperate(op string) {
         accumulator += data.Result
+        data.Ac = data.Result
         data.Result = "0"
 
         switch op {
@@ -87,6 +92,9 @@
         default:
             operator = None
         }
+
+        data.Op = op
+        data.Show = true
     }
 
     func (data *RootData) DoEqual() {
@@ -108,5 +116,6 @@
         }
 
         data.Result = strconv.Itoa(result)
+        data.Show = false
     }
 </script>
