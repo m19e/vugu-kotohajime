@@ -79,12 +79,14 @@ func (data *RootData) DoOperate(op string) {
 }
 
 func (data *RootData) DoEqual() {
-	former, _ := strconv.Atoi(accumulator)
-	latter, _ := strconv.Atoi(data.Result)
+	// former, _ := strconv.Atoi(accumulator)
+	// latter, _ := strconv.Atoi(data.Result)
+	former, _ := strconv.ParseFloat(accumulator, 64)
+	latter, _ := strconv.ParseFloat(data.Result, 64)
 
 	accumulator = ""
 
-	var result int
+	var result float64
 	switch operator {
 	case Plus:
 		result = former + latter
@@ -96,7 +98,8 @@ func (data *RootData) DoEqual() {
 		result = former / latter
 	}
 
-	data.Result = strconv.Itoa(result)
+	// data.Result = strconv.Itoa(result)
+	data.Result = fmt.Sprint(result)
 	data.Show = false
 }
 
